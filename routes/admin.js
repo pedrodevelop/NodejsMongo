@@ -1,8 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const mongoose = require('mongoose')
-require("../models/Categoria")
+require('../models/Categoria')
 const Categoria = mongoose.model('categorias')
+require('../models/Postagem')
+const Postagem = mongoose.model('postagens')
 
 router.get('/', (req, res) => {
     res.render("admin/index")
@@ -50,7 +52,7 @@ router.get('/categorias/read', (req, res) => {
     Categoria.find().sort({date: 'desc'}).then((categorias) => {
         res.render('admin/list_categorias', {categorias: categorias})
     }).catch((erro) => {
-        req.flash('error_msg', 'Erro ao criar categoria')
+        req.flash('error_msg', 'Erro ao listar as categorias')
         res.redirect('/admin')
     })
 })
@@ -99,8 +101,42 @@ router.get('/postagens/create', (req, res) => {
     })
 })
 
+router.post('/postagens/nova', (req,res) => {
+     
+    var erros = []
+
+    if(req.body.categoria == '0'){
+        erros.push({texto: 'Categoria inválida, selecione uma categoria.'})
+    }
+
+    if(erros.length > 0){
+        res.render('admin/postagens/create', {erros:erros})
+    }else{
+        const novaPostagem ={
+            titulo: req.body.titulo,
+            slug: req.body.slug,
+            descricao: req.body.descricao,
+            conteudo: req.body.conteudo,
+            categoria: req.body.categoria
+        }
+
+        new Postagem(novaPostagem).save().then(() => {
+            req.flash('success_msg', 'Postagem criada com sucesso')
+            res.redirect('/admin/postagens/read')
+        }).catch((error) => {
+            req.flash('error_msg', 'Houve um erro durante a criação da postagem')
+            res.redirect('/admin/postagens/read')
+        })
+    }
+})
+
 router.get('/postagens/read', (req, res) => {
-    res.render('admin/list_postagens')
+    Postagem.find().populate('categoria').sort({date: 'desc'}).then((postagens) => {
+        res.render('admin/list_postagens', {postagens: postagens})
+    }).catch((erro) => {
+        req.flash('error_msg', 'Erro ao listar as postagens')
+        res.redirect('/admin')
+    })
 })
 
 

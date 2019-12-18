@@ -1,0 +1,24 @@
+<div class="jumbotron">
+  <h1 class="display-4">Bem-vindo ao NodeApp</h1>
+  <p class="lead">Esta é uma aplicação simples, desenvolvida com NodeJs, Express e MongoDB.</p>
+  <hr class="my-4">
+  <p>Aqui você vai poder ler sobre as novidades do mundo da computação.</p>
+  <a class="btn btn-primary btn-lg" href="#" role="button">Crie uma conta</a>
+</div>
+<hr class="my-4">
+<h2>Postagens recentes:</h2>
+
+{{#each postagens}}
+<div class="card mt-4">
+    <div class="card-body">
+        <h3>{{titulo}}</h3>
+        <p>{{descricao}}</p>
+        <a href="/postagem/{{slug}}"><button class="btn btn-info">Leia mais</button></a>
+        <hr>
+        <small>Categoria: {{categoria.nome}}</small><br>
+        <small>Data de publicação: {{data}}</small>
+    </div>
+</div>
+{{else}}
+    <h5>Nenhuma postagem</h5>
+{{/each}}
