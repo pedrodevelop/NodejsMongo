@@ -1,10 +1,10 @@
 {{#each erros}}
     <div class="alert alert-danger">{{texto}}</div>
 {{else}}
-
+    
 {{/each}}
 <h1 class="display-4">Nova categoria:</h1>
-<hr class="my-3">
+<hr class="my-4">
 <div class="card">
     <div class="card-body">
     <form method="POST" action="/admin/categorias/nova">
@@ -19,4 +19,5 @@
         </div>
     <button type="submit" class="btn btn-primary">Cadastrar categoria</button>
     </form>
+    <a href="/admin/categorias/read"><button type="submit" class="btn btn-secondary mt-2">Voltar</button></a>
 </div>
