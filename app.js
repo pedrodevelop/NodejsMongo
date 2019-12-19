@@ -13,6 +13,10 @@
     const Postagem = mongoose.model('postagens')
     require('./models/Categoria')
     const Categoria = mongoose.model('categorias')
+    const passport = require('passport')
+    require('./config/auth')(passport)
+    const {autenticado} = require('./helpers/admin')
+    const db = require('./config/db')
     
 //Configs
     //Sessão
@@ -21,12 +25,16 @@
         resave: true,
         saveUninitialized: true
     }))
+    app.use(passport.initialize())
+    app.use(passport.session())
     app.use(flash())
 
     //Middleware
     app.use((req, res, next) => {
         res.locals.success_msg = req.flash("success_msg")
         res.locals.error_msg = req.flash("error_msg")
+        res.locals.error = req.flash('error')
+        res.locals.user = req.user || null
         next()
     })
 
@@ -39,7 +47,7 @@
     app.set('view engine', 'handlebars')
 
     //Mongoose
-    mongoose.connect('mongodb://localhost/nodeapp', { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+    mongoose.connect(db.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
         console.log('Bd conectado.')
     }).catch((err) => {
         console.log('Erro ao se conectar: ' + erro)
@@ -60,7 +68,7 @@ app.get('/', (req,res) => {
     })
 })
 
-app.get('/postagem/:slug', (req, res) => {
+app.get('/postagem/:slug', autenticado, (req, res) => {
     Postagem.findOne({slug: req.params.slug}).then((postagem) => {
         if(postagem){
             res.render('postagem/index', {postagem: postagem})
@@ -74,7 +82,7 @@ app.get('/postagem/:slug', (req, res) => {
     })
 })
 
-app.get('/categorias', (resq, res) => {
+app.get('/categorias', autenticado,(resq, res) => {
     Categoria.find().then((categorias) => {
         res.render('categorias/index', {categorias: categorias})
     }).catch((error) => {
@@ -83,7 +91,7 @@ app.get('/categorias', (resq, res) => {
     })
 })
 
-app.get('/categorias/:slug', (req, res) => {
+app.get('/categorias/:slug', autenticado,(req, res) => {
     Categoria.findOne({slug: req.params.slug}).then((categoria) => {
         if(categoria){
             Postagem.find({categoria: categoria._id}).then((postagens) => {
@@ -107,7 +115,7 @@ app.get('/404', (req, res) => {
 })
 
 //Conexão
-const porta = 8081
+const porta = process.env.porta || 8081
 app.listen(porta, () => {
     console.log("Servidor rodando.")
 })

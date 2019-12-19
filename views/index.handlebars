@@ -1,13 +1,19 @@
+{{#if user}}
+
+{{else}}
 <div class="jumbotron">
   <h1 class="display-4">Bem-vindo ao NodeApp</h1>
   <p class="lead">Esta é uma aplicação simples, desenvolvida com NodeJs, Express e MongoDB.</p>
   <hr class="my-4">
   <p>Aqui você vai poder ler sobre as novidades do mundo da computação.</p>
-  <a class="btn btn-primary btn-lg" href="#" role="button">Crie uma conta</a>
+  <a class="btn btn-primary btn-lg" href="/usuarios/registro" role="button">Crie uma conta</a>
+  ou
+  <a class="btn btn-primary btn-lg" href="/usuarios/login">Faça login</a>
 </div>
 <hr class="my-4">
-<h2>Postagens recentes:</h2>
-
+{{/if}}
+<h2 class="display-4">Postagens recentes:</h2>
+<hr class="my-5">
 {{#each postagens}}
 <div class="card mt-4">
     <div class="card-body">
